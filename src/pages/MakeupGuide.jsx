@@ -1,4 +1,5 @@
 import { useState } from "react"
+import CameraFeed from "../components/CameraFeed"
 
 const MAKEUP_STYLES = [
     {id: 'natural', label: 'Natural', color: '#F5E6D0'},
@@ -15,6 +16,8 @@ function MakeupGuide() {
 
     //Track which makeup style is currently selected
     const [selectedStyle, setSelectedStyle] = useState('douyin')
+
+    const [cameraOn, setCameraOn] = useState(true)
 
     return (
         <div style={{display: 'flex', flexDirection: 'column', height: '100vh'}}>
@@ -76,56 +79,77 @@ function MakeupGuide() {
                     {/* Camera / Upload frame */}
                     <div style={{
                         backgroundColor:' #fff5f8',
-                        border: '1px solid 3f0d9e6',
+                        border: '1px solid #f0d9e6',
                         borderRadius: '16px',
-                        height: '340px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '12px',
+                        height: '480px',
                         position: 'relative',
+                        overflow: 'hidden',
                     }}>
+
+                        {/* Show live camera or upload prompt based on mode */}
+                        {inputMode === 'camera' ? (
+                            <CameraFeed onStreamReady={(video) => console.log('Camera ready!', video)}
+                            onCameraToggle={(status) => setCameraOn(status)} />
+                        ) : (
+                            <div style={{
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px',
+                            }}>
+                                <div style={{fontSize: '36px'}}>🖼️</div>
+                                <p style={{fontSize:'13px', color: '#c4a0b4'}}>Upload your photo here</p>
+                                <button style={{
+                                    fontSize: '13px', padding: '8px 20px',
+                                    borderRadius: '20px', border: '1px solid #e8c0d4',
+                                    backgroundColor: '#fbdce8', color: '#8b3060', cursor: 'pointer',
+                                }}>
+                                    Choose photo
+                                </button>
+                            </div>
+                        )}
+
                         {/* Face oval outline - placeholder for real camera late */}
-                        <div style={{
-                            width: '140px',
-                            height: '185px',
-                            border: '2px dashed #e8a8c4',
-                            borderRadius: '50% 50% 45% 45%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            position: 'relative',
-                        }}>
-                            {/* Blush overlay */}
-                            <div style={{position: 'absolute', width: '40px', height: '18px', backgroundColor: 'rgba(240, 140, 170, 0.30', borderRadius: '50%', left: '-20px', top:'75px'}} />
-                            <div style={{position: 'absolute', width: '40px', height: '18px', backgroundColor: 'rgba(240, 140, 170, 0.30', borderRadius: '50%', right: '-20px', top:'75px'}} />
+                        {inputMode === 'camera' && cameraOn && (
+                            <div style={{
+                                position: 'absolute', inset: 0, pointerEvents: 'none',
+                                display: 'flex', flexDirection: 'column',
+                                alignItems: 'center', justifyContent: 'center',
+                            }}>
+                                <div style={{
+                                    width: '140px', height:'185px',
+                                    border: '2px dashed rgba(242, 169, 196, 0.8)',
+                                    borderRadius: '50% 50% 45% 45%',
+                                    position: 'relative',
+                                }}>
+                                    {/* Blush overlay */}
+                                    <div style={{position: 'absolute', width: '40px', height: '18px', backgroundColor: 'rgba(240, 140, 170, 0.30)', borderRadius: '50%', left: '-20px', top:'75px'}} />
+                                    <div style={{position: 'absolute', width: '40px', height: '18px', backgroundColor: 'rgba(240, 140, 170, 0.30)', borderRadius: '50%', right: '-20px', top:'75px'}} />
 
-                            {/* Contour overlay */}
-                            <div style={{position: 'absolute', width: '13px', height: '60px', backgroundColor: 'rgba(160, 100, 120, 0.16', borderRadius: '8px', left: '8px', top:'55px'}} />
-                            <div style={{position: 'absolute', width: '13px', height: '60px', backgroundColor: 'rgba(160, 100, 120, 0.16', borderRadius: '8px', left: '8px', top:'55px'}} />
+                                    {/* Contour overlay */}
+                                    <div style={{position: 'absolute', width: '13px', height: '60px', backgroundColor: 'rgba(160, 100, 120, 0.16)', borderRadius: '8px', left: '8px', top:'55px'}} />
+                                    <div style={{position: 'absolute', width: '13px', height: '60px', backgroundColor: 'rgba(160, 100, 120, 0.16)', borderRadius: '8px', right: '8px', top:'55px'}} />
 
-                            {/* Highlight overlay */}
-                            <div style={{position: 'absolute', width: '13px', height: '32px', backgroundColor: 'rgba(255, 235, 210, 0.75', borderRadius: '8px',top:'20px'}} />
-                        </div>
-
-                        <p style={{ fontSize: '12px', color: '#c4a0b4'}}>
-                            {inputMode === 'camera' ? 'Camera will appear here' : 'Upload your photo here'}
-                        </p>
+                                    {/* Highlight overlay */}
+                                    <div style={{position: 'absolute', width: '13px', height: '32px', backgroundColor: 'rgba(255, 235, 210, 0.75)', borderRadius: '8px',top:'20px'}} />
+                                </div>
+                            </div>
+                        )}
 
                         {/* Overlay legend */}
-                        <div style={{position: 'absolute', bottom: '14px', right: '16px', display: 'flex', flexDirection: 'column', gap: '5px'}}>
-                            {[
-                                {color: 'rgba(240,140,170,0.45)', label: 'Blush'},
-                                {color: 'rgba(160, 100, 120, 0.30)', label: 'Contour'},
-                                {color: 'rgba(255,230, 200,0.80)', label: 'Highlight'},
-                            ].map(item => (
-                                <div key={item.label} style={{display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#9b6070'}}>
-                                    <div style={{width: '10px', height: '10px', borderRadius: '3px', backgroundColor: item.color}} />
-                                    {item.label}
-                                </div>
-                            ))}
-                        </div>
+                        {inputMode === 'camera' && cameraOn && (
+                            <div style={{position: 'absolute', bottom: '14px', right: '16px', display: 'flex', flexDirection: 'column', gap: '5px'}}>
+                                {[
+                                    {color: 'rgba(240,140,170,0.45)', label: 'Blush'},
+                                    {color: 'rgba(160, 100, 120, 0.30)', label: 'Contour'},
+                                    {color: 'rgba(255,230, 200,0.80)', label: 'Highlight'},
+                                ].map(item => (
+                                    <div key={item.label} style={{display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#9b6070'}}>
+                                        <div style={{width: '10px', height: '10px', borderRadius: '3px', backgroundColor: item.color}} />
+                                        {item.label}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Face analysis chips - will be populated by gemini */}
@@ -140,7 +164,7 @@ function MakeupGuide() {
                                 display: 'flex', alignItems: 'center', gap: '6px',
                                 fontSize: '12px', padding: '5px 13px',
                                 borderRadius: '20px', border: '1px solid #e0c0d0',
-                                color: '#9b6070', backgroundColor: 'fff5f8',
+                                color: '#9b6070', backgroundColor: '#fff5f8',
                             }}>
                                 <div style={{width: '7px', height: '7px', borderRadius: '50%', backgroundColor: chip.color}} />
                                 {chip.label}
@@ -194,7 +218,7 @@ function MakeupGuide() {
                     flexShrink: 0,
                 }}>
                     <div>
-                        <h3 style={{fontSize: '16px', fontWeight: '500', color: '$6b3050'}}>
+                        <h3 style={{fontSize: '16px', fontWeight: '500', color: '#6b3050'}}>
                             {MAKEUP_STYLES.find(s => s.id === selectedStyle)?.label}
                         </h3>
                         <p style={{fontSize: '12px', color: '#c4a0b4', marginTop: '3px'}}>
