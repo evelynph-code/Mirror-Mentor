@@ -1,5 +1,6 @@
 import { useState } from "react"
 import CameraFeed from "../components/CameraFeed"
+import PhotoUpload from "../components/PhotoUpload"
 
 const MAKEUP_STYLES = [
     {id: 'natural', label: 'Natural', color: '#F5E6D0'},
@@ -11,13 +12,10 @@ const MAKEUP_STYLES = [
 ]
 
 function MakeupGuide() {
-    // Tracks which input mode user chose - camera or upload
     const [inputMode, setInputMode] = useState('camera')
-
-    //Track which makeup style is currently selected
     const [selectedStyle, setSelectedStyle] = useState('douyin')
-
     const [cameraOn, setCameraOn] = useState(true)
+    const [photoReady, setPhotoReady] = useState(false)
 
     return (
         <div style={{display: 'flex', flexDirection: 'column', height: '100vh'}}>
@@ -91,25 +89,15 @@ function MakeupGuide() {
                             <CameraFeed onStreamReady={(video) => console.log('Camera ready!', video)}
                             onCameraToggle={(status) => setCameraOn(status)} />
                         ) : (
-                            <div style={{
-                                height: '100%',
-                                display: 'flex',
-                                flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px',
-                            }}>
-                                <div style={{fontSize: '36px'}}>🖼️</div>
-                                <p style={{fontSize:'13px', color: '#c4a0b4'}}>Upload your photo here</p>
-                                <button style={{
-                                    fontSize: '13px', padding: '8px 20px',
-                                    borderRadius: '20px', border: '1px solid #e8c0d4',
-                                    backgroundColor: '#fbdce8', color: '#8b3060', cursor: 'pointer',
-                                }}>
-                                    Choose photo
-                                </button>
-                            </div>
+                            <PhotoUpload
+                            onPhotoReady={(url) => {
+                                setPhotoReady(!!url)
+                                console.log('Photo ready:', url)
+                            }} />
                         )}
 
                         {/* Face oval outline - placeholder for real camera late */}
-                        {inputMode === 'camera' && cameraOn && (
+                        {(inputMode === 'camera' && cameraOn) || (inputMode === 'upload' && photoReady) ? (
                             <div style={{
                                 position: 'absolute', inset: 0, pointerEvents: 'none',
                                 display: 'flex', flexDirection: 'column',
@@ -133,10 +121,10 @@ function MakeupGuide() {
                                     <div style={{position: 'absolute', width: '13px', height: '32px', backgroundColor: 'rgba(255, 235, 210, 0.75)', borderRadius: '8px',top:'20px'}} />
                                 </div>
                             </div>
-                        )}
+                        ) : null}
 
                         {/* Overlay legend */}
-                        {inputMode === 'camera' && cameraOn && (
+                        {(inputMode === 'camera' && cameraOn) || (inputMode === 'upload' && photoReady) ? (
                             <div style={{position: 'absolute', bottom: '14px', right: '16px', display: 'flex', flexDirection: 'column', gap: '5px'}}>
                                 {[
                                     {color: 'rgba(240,140,170,0.45)', label: 'Blush'},
@@ -149,7 +137,7 @@ function MakeupGuide() {
                                     </div>
                                 ))}
                             </div>
-                        )}
+                        ) : null}
                     </div>
 
                     {/* Face analysis chips - will be populated by gemini */}
