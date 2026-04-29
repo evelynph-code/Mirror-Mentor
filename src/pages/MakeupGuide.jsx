@@ -1,7 +1,10 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import PhotoUpload from "../components/PhotoUpload"
 import { useGemini } from "../hooks/useGemini"
 import CameraWithOverlay from "../components/CameraWithOverlay"
+import { useProfile } from "../hooks/useProfile"
+import { useLooks } from "../hooks/useLooks"
+import { useCart } from "../hooks/useCart"
 
 const MAKEUP_STYLES = [
   { id: 'natural',   label: 'Natural',       color: '#F5E6D0' },
@@ -12,23 +15,44 @@ const MAKEUP_STYLES = [
   { id: 'baddie',    label: 'Baddie',        color: '#7A4060' },
 ]
 
-function MakeupGuide() {
+function MakeupGuide({user}) {
   const [inputMode, setInputMode]         = useState('camera')
   const [selectedStyle, setSelectedStyle] = useState('korean')
   const [cameraOn, setCameraOn]           = useState(false)
   const [photoReady, setPhotoReady]       = useState(false)
   const [imageSource, setImageSource]     = useState(null)
   const [lightingReport, setLightingReport] = useState(null)
-
-  // ✅ These were missing — guide flow state
   const [guideStarted, setGuideStarted]   = useState(false)
   const [completed, setCompleted]         = useState(false)
   const [currentStep, setCurrentStep]     = useState(0)
+  const [lookSaved, setLookSaved] = useState(false)
+  const [saveError, setSaveError] = useState(null)
 
   const { analyze, analyzing, faceData, steps, error } = useGemini()
+  const {profile, loadingProfile, saveProfile} = useProfile(user)
+  const {saveLooks, loadLooks, isLookSaved} = useLooks(user)
+  const {cart, addToCart, isInCart, loadCart} = useCart(user)
 
-  // The current active step object
   const activeStep = steps?.[currentStep]
+
+  useEffect(() => {
+    if (profile && !faceData) {
+      console.log('Profile loaded from database:', profile)
+    }
+  }, [profile])
+
+  useEffect(() => {
+    if (faceData && user) {
+      saveProfile(faceData)
+    }
+  }, [faceData])
+
+  useEffect(() => {
+    if (user) {
+      loadCart()
+      loadLooks()
+    }
+  }, [user])
 
   async function handleStart() {
     if (!imageSource) return
@@ -52,6 +76,30 @@ function MakeupGuide() {
     setCurrentStep(0)
     setGuideStarted(false)
     setCompleted(false)
+  }
+
+  async function handleSaveLook() {
+    if (!steps || !faceData) return
+    setSaveError(null)
+
+    const result = await saveLooks(
+      MAKEUP_STYLES.find(s => s.id === selectedStyle)?.label,
+        faceData, 
+        steps
+      )
+      
+      if (result?.error === 'already_saved') {
+        setSaveError('This look is already saved!')
+        return
+      }
+
+      if (result?.error) {
+        setSaveError('Failed to save - please try again.')
+        return
+      }
+
+      setLookSaved(true)
+      setTimeout(() => setLookSaved(false), 3000)
   }
 
   return (
@@ -386,22 +434,46 @@ function MakeupGuide() {
                       backgroundColor: 'white', borderRadius: '8px',
                       border: '1px solid #F0D9E6',
                       fontSize: '12px', color: '#8B3060',
-                      display: 'flex', alignItems: 'center', gap: '8px',
                     }}>
-                      {/* Shade color swatch */}
-                      {activeStep.shadeHex && (
-                        <div style={{
-                          width: '16px', height: '16px', borderRadius: '50%',
-                          backgroundColor: activeStep.shadeHex,
-                          border: '1px solid #E0C0D0', flexShrink: 0,
-                        }} />
-                      )}
-                      <div>
-                        <div style={{ fontWeight: '500' }}>{activeStep.product}</div>
-                        {activeStep.shade && activeStep.shade !== 'N/A' && (
-                          <div style={{ color: '#C4A0B4', fontSize: '11px' }}>{activeStep.shade}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                        {activeStep.shadeHex && (
+                          <div style={{
+                            width: '16px', height: '16px', borderRadius: '50%',
+                            backgroundColor: activeStep.shadeHex,
+                            border: '1px solid #E0C0D0', flexShrink: 0,
+                          }} />
                         )}
+                        <div>
+                          <div style={{ fontWeight: '500' }}>{activeStep.product}</div>
+                          {activeStep.shade && activeStep.shade !== 'N/A' && (
+                            <div style={{ color: '#C4A0B4', fontSize: '11px' }}>{activeStep.shade}</div>
+                          )}
+                        </div>
                       </div>
+
+                      {/* Add to cart button */}
+                      <button
+                        onClick={() => addToCart({
+                          product:   activeStep.product,
+                          shade:     activeStep.shade,
+                          shadeHex:  activeStep.shadeHex,
+                          zone:      activeStep.zone,
+                          styleName: MAKEUP_STYLES.find(s => s.id === selectedStyle)?.label,
+                        })}
+                        disabled={isInCart(activeStep.product, activeStep.shade)}
+                        style={{
+                          width: '100%', padding: '6px',
+                          borderRadius: '8px', border: 'none',
+                          backgroundColor: isInCart(activeStep.product, activeStep.shade)
+                            ? '#D4EAD0' : '#FBDCE8',
+                          color: isInCart(activeStep.product, activeStep.shade)
+                            ? '#3A7850' : '#8B3060',
+                          fontSize: '11px', cursor: 'pointer',
+                        }}
+                      >
+                        {isInCart(activeStep.product, activeStep.shade)
+                          ? '✅ In cart' : '+ Add to cart'}
+                      </button>
                     </div>
                   )}
 
@@ -426,6 +498,26 @@ function MakeupGuide() {
               )}
 
               <div style={{ height: '1px', backgroundColor: '#F0D9E6' }} />
+
+              {/* Save look button - available during guide */}
+              <button
+              onClick={handleSaveLook}
+              disabled={!steps || lookSaved}
+              style={{
+                width: '100%', padding: '10px',
+                borderRadius: '20px', border: 'none',
+                backgroundColor: lookSaved ? '#d4ead0' : '#fbdce8',
+                color: lookSaved ? '#3a7850' : '#8b3060',
+                fontSize: '13px', cursor: !steps || lookSaved ? 'default' : 'pointer',
+              }}>
+                {lookSaved ? '✅ Look saved!' : '🌸 Save this look'}
+              </button>
+
+              {saveError && (
+                <p style={{fontSize: '11px', color: '#c47090', textAlign: 'center', marginTop: '4px'}}>
+                  ⚠️ {saveError}
+                </p>
+              )}
 
               {/* Upcoming steps */}
               <p style={{ fontSize: '11px', color: '#C4A0B4', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
@@ -457,6 +549,30 @@ function MakeupGuide() {
               <p style={{ fontSize: '13px', color: '#C4A0B4', lineHeight: '1.7' }}>
                 You completed your {MAKEUP_STYLES.find(s => s.id === selectedStyle)?.label} look. You're glowing! 🌸
               </p>
+
+              {/* Save button again */}
+              <button
+              onClick={handleSaveLook}
+              disabled={!steps || lookSaved}
+              style={{
+                width: '100%', padding: '12px',
+                borderRadius: '20px', border: 'none',
+                marginTop: '16px',
+                backgroundColor: lookSaved ? '#d4ead0' : '#8b3060',
+                color: lookSaved ? '#3a7850' : 'white',
+                fontSize: '14px', fontWeight: '500',
+                cursor: !steps || lookSaved ? 'default' : 'pointer',
+              }}>
+                {lookSaved ? '✅ Look saved!' : '🌸 Save this look'}
+              </button>
+
+              {saveError && (
+                <p style={{fontSize: '11px', color: '#c47090', textAlign: 'center', marginTop: '4px'}}>
+                  ⚠️ {saveError}
+                </p>
+              )}
+
+              {/* Face profile chips */}
               {faceData && (
                 <div style={{ marginTop: '20px', textAlign: 'left' }}>
                   <p style={{ fontSize: '11px', color: '#C4A0B4', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '10px' }}>

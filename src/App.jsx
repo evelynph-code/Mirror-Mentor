@@ -61,8 +61,8 @@ function App() {
 
       {/* Right content area - canges based on activePage */}
       <div style={{ flex: 1, backgroundColor: '#FFFAFC'}}>
-        {activePage === 'guide' && <MakeupGuide />}
-        {activePage === 'products' && <ProductFinder />}
+        {activePage === 'guide' && <MakeupGuide user={user} />}
+        {activePage === 'products' && <ProductFinder user={user} />}
       </div>
     </div>
   )
