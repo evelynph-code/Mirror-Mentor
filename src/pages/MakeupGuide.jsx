@@ -322,7 +322,7 @@ function MakeupGuide() {
           {/* Before guide */}
           {!guideStarted && (
             <div style={{ textAlign: 'center', padding: '40px 0', color: '#C4A0B4' }}>
-              <div style={{ fontSize: '36px', marginBottom: '12px' }}>💄</div>
+              <div style={{ fontSize: '36px', marginBottom: '12px' }}>👀</div>
               <p style={{ fontSize: '14px', lineHeight: '1.7' }}>
                 Pick a style and click<br />
                 <strong style={{ color: '#8B3060' }}>Start makeup guide</strong><br />
