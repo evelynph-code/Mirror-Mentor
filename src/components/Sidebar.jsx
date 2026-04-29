@@ -65,15 +65,35 @@ function Sidebar({ activePage, setActivePage}) {
             </div>
 
             {/* My Looks */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '11px 12px', borderRadius: '8px', fontSize: '14px', color: '#9B6B80', cursor: 'pointer'}}>
-                <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#A8C4D4', flexShrink: 0}} />
-                My looks
+            <div
+            onClick={() => setActivePage('mylooks')}
+            style={{
+                display: 'flex', alignItems: 'center', gap: '10px',
+                padding: '11px 12px', borderRadius: '8px',
+                fontSize: '14px', cursor: 'pointer',
+                backgroundColor: activePage === 'mylooks' ? '#FBDCE8' : 'transparent',
+                color: activePage === 'mylooks' ? '#8B3060' : '#9B6B80',
+                fontWeight: activePage === 'mylooks' ? '500' : '400',
+            }}
+            >
+            <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#A8C4D4', flexShrink: 0 }} />
+            My looks
             </div>
 
             {/* Skin Profile */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '11px 12px', borderRadius: '8px', fontSize: '14px', color: '#9B6B80', cursor: 'pointer'}}>
-                <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#A8C4D4', flexShrink: 0}} />
-                Skin profile
+            <div
+            onClick={() => setActivePage('skinprofile')}
+            style={{
+                display: 'flex', alignItems: 'center', gap: '10px',
+                padding: '11px 12px', borderRadius: '8px',
+                fontSize: '14px', cursor: 'pointer',
+                backgroundColor: activePage === 'skinprofile' ? '#FBDCE8' : 'transparent',
+                color: activePage === 'skinprofile' ? '#8B3060' : '#9B6B80',
+                fontWeight: activePage === 'skinprofile' ? '500' : '400',
+            }}
+            >
+            <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#A8C4D4', flexShrink: 0 }} />
+            Skin profile
             </div>
 
             {/* Profile summary card - pushed to bottom */}

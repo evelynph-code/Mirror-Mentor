@@ -15,7 +15,7 @@ const MAKEUP_STYLES = [
   { id: 'baddie',    label: 'Baddie',        color: '#7A4060' },
 ]
 
-function MakeupGuide({user}) {
+function MakeupGuide({user, replayLook, onReplayConsumed}) {
   const [inputMode, setInputMode]         = useState('camera')
   const [selectedStyle, setSelectedStyle] = useState('korean')
   const [cameraOn, setCameraOn]           = useState(false)
@@ -28,7 +28,7 @@ function MakeupGuide({user}) {
   const [lookSaved, setLookSaved] = useState(false)
   const [saveError, setSaveError] = useState(null)
 
-  const { analyze, analyzing, faceData, steps, error } = useGemini()
+  const { analyze, analyzing, faceData, steps, error, loadSavedLook } = useGemini()
   const {profile, loadingProfile, saveProfile} = useProfile(user)
   const {saveLooks, loadLooks, isLookSaved} = useLooks(user)
   const {cart, addToCart, isInCart, loadCart} = useCart(user)
@@ -53,6 +53,20 @@ function MakeupGuide({user}) {
       loadLooks()
     }
   }, [user])
+
+  useEffect(() => {
+    if (!replayLook) return
+    loadSavedLook(replayLook)
+
+    setSelectedStyle(
+      MAKEUP_STYLES.find(s => s.label === replayLook.style_name)?.id ?? 'korean')
+      setCurrentStep(0)
+      setCompleted(false)
+      setGuideStarted(true)
+      setLookSaved(true)
+
+      if (onReplayConsumed) onReplayConsumed()
+  }, [replayLook])
 
   async function handleStart() {
     if (!imageSource) return

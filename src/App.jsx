@@ -4,12 +4,15 @@ import Sidebar from "./components/Sidebar";
 import MakeupGuide from "./pages/MakeupGuide";
 import ProductFinder from "./pages/ProductFinder";
 import Auth from "./pages/Auth";
+import MyLooks from "./pages/myLooks";
+
 
 
 function App() {
   const [activePage, setActivePage] = useState('guide')
   const [user, setUser] = useState(null)
   const [loadingAuth, setLoadingAuth] = useState(true)
+  const [replayLook, setReplayLook] = useState(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(({data: {session}}) => {
@@ -61,8 +64,20 @@ function App() {
 
       {/* Right content area - canges based on activePage */}
       <div style={{ flex: 1, backgroundColor: '#FFFAFC'}}>
-        {activePage === 'guide' && <MakeupGuide user={user} />}
+        {activePage === 'guide' && (
+          <MakeupGuide user={user}
+          replayLook={replayLook}
+          onReplayConsumed={() => setReplayLook(null)} />
+        )}
         {activePage === 'products' && <ProductFinder user={user} />}
+        {activePage === 'mylooks' && (
+          <MyLooks
+          user={user}
+          onReplayLook={(look) => {
+            setReplayLook(look)
+            setActivePage('guide')
+          }} />
+        )}
       </div>
     </div>
   )

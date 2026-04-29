@@ -27,5 +27,10 @@ export function useGemini() {
         }
     } 
 
-    return {analyze, analyzing, faceData, steps, error}
+    function loadSavedLook(look) {
+        setFaceData(look.face_data)
+        setSteps(look.steps)
+    }
+
+    return {analyze, analyzing, faceData, steps, error, loadSavedLook}
 }
