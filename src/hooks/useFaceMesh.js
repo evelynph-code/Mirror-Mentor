@@ -1,30 +1,23 @@
 import { useEffect, useRef, useState } from "react"
 
 export function useFaceMesh(videoRef, canvasRef, activeStep, onLandmarks) {
-  const faceMeshRef = useRef(null)
-  const cameraRef   = useRef(null)
   const [faceDetected, setFaceDetected] = useState(false)
-
-  // Store activeStep and onLandmarks in refs so we can access
-  // the latest values without restarting the entire effect
   const activeStepRef  = useRef(activeStep)
   const onLandmarksRef = useRef(onLandmarks)
 
-  // Keep refs updated whenever props change
   useEffect(() => {
     activeStepRef.current  = activeStep
     onLandmarksRef.current = onLandmarks
   }, [activeStep, onLandmarks])
 
-  // Main effect — runs ONCE when camera mounts, never restarts
   useEffect(() => {
-    if (!videoRef?.current || !canvasRef?.current) return
+    if (!videoRef?.current || !canvasRef?.current) {
+      return
+    }
 
     const FaceMesh = window.FaceMesh
-    const Camera   = window.Camera
-
-    if (!FaceMesh || !Camera) {
-      console.error('MediaPipe not loaded — check index.html CDN scripts')
+    if (!FaceMesh) {
+      console.error('FaceMesh not loaded from CDN')
       return
     }
 
@@ -44,9 +37,10 @@ export function useFaceMesh(videoRef, canvasRef, activeStep, onLandmarks) {
     })
 
     faceMesh.onResults((results) => {
+      if (!canvasRef.current) return
+
       canvas.width  = videoRef.current?.videoWidth  || 640
       canvas.height = videoRef.current?.videoHeight || 480
-
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
       if (!results.multiFaceLandmarks?.length) {
@@ -57,7 +51,6 @@ export function useFaceMesh(videoRef, canvasRef, activeStep, onLandmarks) {
       setFaceDetected(true)
       const lm = results.multiFaceLandmarks[0]
 
-      // Use refs — always latest value, no effect restart needed
       if (onLandmarksRef.current) onLandmarksRef.current(lm, canvas)
 
       const p = (index) => ({
@@ -65,7 +58,6 @@ export function useFaceMesh(videoRef, canvasRef, activeStep, onLandmarks) {
         y: lm[index].y * canvas.height,
       })
 
-      // Draw overlay using latest activeStep from ref
       if (activeStepRef.current) {
         drawZone(
           ctx, p,
@@ -77,27 +69,41 @@ export function useFaceMesh(videoRef, canvasRef, activeStep, onLandmarks) {
       }
     })
 
-    faceMeshRef.current = faceMesh
+    let animationId = null
+    let running     = true
 
-    const camera = new Camera(videoRef.current, {
-      onFrame: async () => {
-        if (videoRef.current) {
+    async function processFrame() {
+      if (!running) return
+
+      if (
+        videoRef.current &&
+        videoRef.current.readyState >= 2 &&
+        videoRef.current.videoWidth > 0 &&
+        !videoRef.current.paused
+      ) {
+        try {
           await faceMesh.send({ image: videoRef.current })
+        } catch (e) {
+          // silently ignore
         }
-      },
-      width: 640,
-      height: 480,
-    })
+      }
+      animationId = requestAnimationFrame(processFrame)
+    }
 
-    camera.start()
-    cameraRef.current = camera
+    // Small delay to let video stream initialize
+    const timeout = setTimeout(() => {
+      processFrame()
+    }, 1000)
 
-    // Cleanup — runs when component unmounts
     return () => {
-      camera.stop()
+      running = false
+      clearTimeout(timeout)
+      if (animationId) cancelAnimationFrame(animationId)
       faceMesh.close()
     }
-  }, []) // ✅ empty array — camera starts once, never restarts
+
+  // ✅ Now reruns when refs become available
+  }, [videoRef, canvasRef])
 
   return { faceDetected }
 }

@@ -37,20 +37,23 @@ function CameraWithOverlay({ activeStep, onVideoReady, onCameraToggle, onLightin
         setError(null)
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
-                video: {facingMode: 'user', width: 640, height: 480},
-                audio: false,
+            video: { facingMode: 'user' },
+            audio: false,
             })
             streamRef.current = stream
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream
-                videoRef.current.play()
-                if (onVideoReady) onVideoReady(videoRef.current)
-            }
-        setLoading(false)
-        setIsOn(true)
 
-        if (onCameraToggle) onCameraToggle(true)
+            if (videoRef.current) {
+            videoRef.current.srcObject = stream
+            videoRef.current.play().catch(() => {})  // silently ignore AbortError
+            if (onVideoReady) onVideoReady(videoRef.current)
+            }
+
+            setLoading(false)
+            setIsOn(true)
+            if (onCameraToggle) onCameraToggle(true)
+
         } catch (err) {
+            console.error('Camera error:', err)
             setError('Could not access camera. Please allow camera permission.')
             setLoading(false)
         }
