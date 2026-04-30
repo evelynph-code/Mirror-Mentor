@@ -116,7 +116,7 @@ function ProductFinder({user}) {
                                 Go to <strong>Skin profile</strong> in the sidebar.
                             </div>
                         ) : (
-                            <div style={{display: 'flex', flexDirecion: 'column', gap: '6px'}}>
+                            <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
                                 {[
                                     { label: 'Skin type',   value: profile.skin_type },
                                     { label: 'Skin tone',   value: profile.skin_tone },
@@ -197,7 +197,7 @@ function ProductFinder({user}) {
                         style={{
                             flex: 1, padding: '9px 12px',
                             borderRadius: '10px',
-                            border: customStyle ? '1.5px solid #d4a0bc' : '1px slid #f0d9e6',
+                            border: customStyle ? '1.5px solid #d4a0bc' : '1px solid #f0d9e6',
                             fontSize: '12px', color: '#6b3050',
                             outline: 'none', backgroundColor: '#fffafc',
                         }} />
@@ -309,7 +309,7 @@ function ProductFinder({user}) {
                                     </div>
                                     <p style={{fontSize: '10px', color: '#c4a0b4', marginTop: '4px', textAlign: 'right'}}>
                                         {totalCost > (profile?.total_budget ?? 100)
-                                        ? `$${(totalCost = (profile?.total_budget ?? 100)).toFixed(2)} over budget`
+                                        ? `$${(totalCost - (profile?.total_budget ?? 100)).toFixed(2)} over budget`
                                         : `$${((profile?.total_budget ?? 100) - totalCost).toFixed(2)} remaining`}
                                     </p>
                                 </div>
@@ -318,7 +318,7 @@ function ProductFinder({user}) {
                             {/* Products grid */}
                             <div style={{
                                 display: 'grid',
-                                gridTemplateColumn: 'repeat(auto-full, minmax(260px, 1fr))',
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
                                 gap: '14px',
                             }}>
                                 {products.map((product, index) => (
@@ -328,7 +328,7 @@ function ProductFinder({user}) {
                                         inCart={isInCart(product.product, product.shade)}
                                         onAddToCart={() => addToCart({
                                             product: product.product,
-                                            branad: product.brand,
+                                            brand: product.brand,
                                             shade: product.shade,
                                             shadeHex: product.shadeHex,
                                             price: product.price?.toString(),
@@ -378,7 +378,7 @@ function ProductCard({product, inCart, onAddToCart, onRemoveFromCart}) {
                 {/* Shade swatch */}
                 <div style={{
                     width: '40px', height: '40px', borderRadius: '50%', flexShrink: 0,
-                    backgroundCOlor: product.shadeHex ?? '#fbdce8',
+                    backgroundColor: product.shadeHex ?? '#fbdce8',
                     border: '2px solid #f0d9e6',
                 }} />
                 <div style={{flex: 1}}>

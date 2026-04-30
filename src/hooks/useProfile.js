@@ -18,9 +18,9 @@ export function useProfile(user) {
             .from('profiles')
             .select('*')
             .eq('user_id', user.id)
-            .single()
+            .maybeSingle()
 
-            if (error && error.code !== 'pgrst116') throw error
+            if (error && error.code !== 'PGRST116') throw error
 
             setProfile(data ?? null)
         } catch (err) {
@@ -30,16 +30,19 @@ export function useProfile(user) {
         }
     }
 
-    async function saveProfile(faceData, skinType = null) {
+    async function saveProfile(faceData, skinType = null, concerns = [], budget = null, totalBudget = null) {
         try {
             const profileData = {
                 user_id: user.id,
                 skin_type: skinType,
+                skin_concerns: concerns,
                 skin_tone: faceData.skinTone,
                 skin_tone_hex: faceData.skinToneHex,
                 face_shape: faceData.faceShape,
                 eye_shape: faceData.eyeShape,
-                lip_fullness: faceData.lipFullNess,
+                lip_fullness: faceData.lipFullness,
+                budget: budget,
+                total_budget: totalBudget,
                 updated_at: new Date().toISOString(),
             }
 
@@ -47,7 +50,7 @@ export function useProfile(user) {
             .from('profiles')
             .upsert(profileData, {onConflict: 'user_id'})
             .select()
-            .single()
+            .maybeSingle()
 
             if (error) throw error
             setProfile(data)

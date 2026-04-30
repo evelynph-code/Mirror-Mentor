@@ -5,6 +5,7 @@ import MakeupGuide from "./pages/MakeupGuide";
 import ProductFinder from "./pages/ProductFinder";
 import Auth from "./pages/Auth";
 import MyLooks from "./pages/myLooks";
+import SkinProfile from "./pages/SkinProfile";
 
 
 
@@ -69,6 +70,7 @@ function App() {
           replayLook={replayLook}
           onReplayConsumed={() => setReplayLook(null)} />
         )}
+        {activePage === 'skinprofile' && <SkinProfile user={user} />}
         {activePage === 'products' && <ProductFinder user={user} />}
         {activePage === 'mylooks' && (
           <MyLooks
