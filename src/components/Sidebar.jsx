@@ -59,6 +59,21 @@ function Sidebar({ activePage, setActivePage}) {
                 Product finder
             </div>
 
+            {/* My cart nav item */}
+            <div
+            onClick={() => setActivePage('cart')}
+            style={{
+                display:'flex', alignItems: 'center', gap: '10px',
+                padding: '11px 12px', borderRadius: '8px',
+                fontSize: '14px', cursor: 'pointer',
+                backgroundColor: activePage === 'cart' ? '#fbdce8' : 'transparent',
+                color: activePage === 'cart' ? '#8b3060' : '#9b6b80',
+                fontWeight: activePage === 'cart' ? '500' : '400',
+            }}>
+                <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#c4a8d4', flexShrink: 0}} />
+                    My cart
+            </div>
+
             {/* Section label */}
             <div style={{ fontSize: '11px', color: '#C4A0B4', letterSpacing: '1px', textTransform: 'uppercase', padding: '12px 10px 3px' }}>
                 Me
