@@ -339,14 +339,14 @@ function SkinProfile({user}) {
                             </div>
                             <input 
                             type="range"
-                            min="20" max="500" step="10"
+                            min="20" max="1000" step="10"
                             value={totalBudget}
                             onChange={e => setTotalBudget(e.target.value)}
                             style={{width: '100%', accentColor: '#8b3060'}} />
 
                             <div style={{display: 'flex', justifyContent: 'space-between', marginTop: '4px'}}>
                                 <span style={{fontSize: '10px', color: '#c4a0b4'}}>$20</span>
-                                <span style={{fontSize: '10px', color: '#c4a0b4'}}>$500</span>
+                                <span style={{fontSize: '10px', color: '#c4a0b4'}}>$1000</span>
                             </div>
                         </div>
                     </section>

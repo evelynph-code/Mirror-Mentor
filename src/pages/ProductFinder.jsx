@@ -81,7 +81,7 @@ function ProductFinder({user}) {
                     backgroundColor: '#fbdce8', color: '#8b3060',
                     fontSize: '13px', fontWeight: '500'
                 }}>
-                    🛍️ {cart.length} item{cart.length !== 1 ? 's' : ''} in cart
+                    🛒 {cart.length} item{cart.length !== 1 ? 's' : ''} in cart
                 </div>
             </div>
 

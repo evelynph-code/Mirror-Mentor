@@ -151,8 +151,31 @@ export async function generateProducts(profile, makeupStyle) {
   ? profile.skin_concerns.join(', ')
   : 'none specified'
 
+  const budgetInstructions = {
+    budget: {
+      label: 'budget-friendly',
+      perProduct: 'strictly under $20 per product',
+      brands: 'Maybelline, L\'Oréal, NYX, e.l.f., Wet n Wild, Revlon, CoverGirl, Essence',
+      avoid: 'Do NOT suggest any luxury, high-end or mid-range brands.',
+    },
+    midrange: {
+      label: 'mid-range',
+      perProduct: 'between $20 and $60 per product',
+      brands: 'Urban Decay, Too Faced, NARS, Benefit, MAC, Tarte, Laura Mercier, Clinique',
+      avoid: 'Do NOT suggest drugstore or luxury brands.',
+    },
+    luxury: {
+      label: 'luxury / high-end',
+      perProduct: 'strictly $60 or above per product — do not go below this',
+      brands: 'Charlotte Tilbury, La Mer, Chanel, Dior, YSL, Giorgio Armani, Tom Ford, Hourglass, Pat McGrath, Clé de Peau',
+      avoid: 'Do NOT suggest any drugstore or mid-range brands. Every product must be premium luxury.',
+    },
+  }
+
+  const tier = budgetInstructions[profile.budget] ?? budgetInstructions.budget
+
   const prompt = `
-    You are a professional makeup artist and beauty product expert.
+    You are a professional makeup artist and luxury beauty product expert.
 
     Generate a personalized makeup product shopping list for this person:
     - Face shape: ${profile.face_shape ?? 'unknown'}
@@ -161,36 +184,42 @@ export async function generateProducts(profile, makeupStyle) {
     - Skin type: ${profile.skin_type ?? 'normal'}
     - Skin concerns: ${concerns}
     - Makeup style: ${makeupStyle}
-    - Budget tier: ${profile.budget ?? 'budget'}
+    - Budget tier: ${tier.label}
+    - Price per product: ${tier.perProduct}
     - Total budget: $${profile.total_budget ?? '100'}
+    - Recommended brands: ${tier.brands}
+
+    CRITICAL PRICING RULE: ${tier.avoid}
+    Every single product MUST be priced ${tier.perProduct}.
+    If you suggest a product outside this price range, the recommendation is wrong.
 
     Return ONLY a JSON array with no extra text, markdown or code blocks:
     [
       {
         "category": "Foundation",
-        "product": "Maybelline Fit Me Matte + Poreless",
-        "brand": "Maybelline",
-        "shade": "220 Natural Beige",
+        "product": "Charlotte Tilbury Airbrush Flawless Foundation",
+        "brand": "Charlotte Tilbury",
+        "shade": "3 Neutral",
         "shadeHex": "#C68450",
-        "price": 9.99,
-        "whyItWorks": "Matte finish controls oil, shade matches medium warm tone",
+        "price": 68,
+        "whyItWorks": "Buildable coverage with a flawless finish, perfect for medium warm skin",
         "zone": "full face"
       }
     ]
 
     Rules:
     - Recommend exactly one product per category
-    - Categories must be in application order:
-      Moisturizer, Primer, Foundation, Concealer, 
+    - Categories in application order:
+      Moisturizer, Primer, Foundation, Concealer,
       Setting powder, Contour, Blush, Highlighter,
       Eyeshadow, Eyeliner, Mascara, Lip product
     - Only include categories relevant to ${makeupStyle} style
-    - Stay within the $${profile.total_budget ?? '100'} total budget
+    - Stay within $${profile.total_budget ?? '100'} total budget
     - Match shade to their exact skin tone hex ${profile.skin_tone_hex ?? '#C68642'}
     - Address their skin concerns: ${concerns}
-    - Use real drugstore or mid-range brands only
-    - price must be a number, not a string
+    - price must be a realistic number matching ${tier.perProduct}
     - whyItWorks must mention their specific skin type or concern
+    - shadeHex must match the actual product shade color
   `
 
   const response = await fetch(`${API_URL}?key=${API_KEY}`, {
@@ -199,7 +228,7 @@ export async function generateProducts(profile, makeupStyle) {
     body: JSON.stringify({
       contents: [{parts: [{text: prompt}]}],
       generationConfig: {
-        temperature: 0.4,
+        temperature: 0.3,
       }
     })
   })
