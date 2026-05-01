@@ -80,18 +80,11 @@ VITE_GEMINI_API_KEY=your_gemini_api_key
 
 ### 4. Run the App
 ```bash
+cd mirror-mentor
 npm run dev
 ```
 
 ### 5. Open in Browser
-http://localhost:5173
-Project Structure (Simplified)
-src/
-├── components/
-├── hooks/
-├── utils/
-├── pages/
-└── App.jsx
 
 ---
 
