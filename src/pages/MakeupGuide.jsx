@@ -27,10 +27,11 @@ function MakeupGuide({user, replayLook, onReplayConsumed}) {
   const [currentStep, setCurrentStep]     = useState(0)
   const [lookSaved, setLookSaved] = useState(false)
   const [saveError, setSaveError] = useState(null)
+  const [customStyle, setCustomStyle] = useState('')
 
   const { analyze, analyzing, faceData, steps, error, loadSavedLook } = useGemini()
   const {profile, loadingProfile, saveProfile} = useProfile(user)
-  const {saveLooks, loadLooks, isLookSaved} = useLooks(user)
+  const {saveLook, loadLooks, isLookSaved} = useLooks(user)
   const {cart, addToCart, isInCart, loadCart} = useCart(user)
 
   const activeStep = steps?.[currentStep]
@@ -73,7 +74,11 @@ function MakeupGuide({user, replayLook, onReplayConsumed}) {
     setCurrentStep(0)
     setCompleted(false)
     setGuideStarted(false)
-    await analyze(imageSource, selectedStyle, lightingReport?.confidence)
+    const styleToUse = customStyle.trim() || 
+      MAKEUP_STYLES.find(s => s.id === selectedStyle)?.label ||
+      'natural'
+
+    await analyze(imageSource, styleToUse, lightingReport?.confidence)
     setGuideStarted(true)
   }
 
@@ -96,24 +101,32 @@ function MakeupGuide({user, replayLook, onReplayConsumed}) {
     if (!steps || !faceData) return
     setSaveError(null)
 
-    const result = await saveLooks(
+    const styleName = customStyle.trim() ||
+    MAKEUP_STYLES.find(s => s.id === selectedStyle)?.label
+      
+    if (isLookSaved(styleName, steps)) {
+      setSaveError('This look is already saved!')
+      return
+    }
+
+    const result = await saveLook(
       MAKEUP_STYLES.find(s => s.id === selectedStyle)?.label,
         faceData, 
         steps
       )
-      
-      if (result?.error === 'already_saved') {
-        setSaveError('This look is already saved!')
-        return
-      }
 
-      if (result?.error) {
-        setSaveError('Failed to save - please try again.')
-        return
-      }
+    if (result?.error === 'already_saved') {
+      setSaveError('This look is already saved!')
+      return
+    }
 
-      setLookSaved(true)
-      setTimeout(() => setLookSaved(false), 3000)
+    if (result?.error) {
+      setSaveError('Failed to save - please try again.')
+      return
+    }
+
+    setLookSaved(true)
+    setTimeout(() => setLookSaved(false), 3000)
   }
 
   return (
@@ -188,9 +201,10 @@ function MakeupGuide({user, replayLook, onReplayConsumed}) {
             backgroundColor: '#FFF5F8',
             border: '1px solid #F0D9E6',
             borderRadius: '16px',
-            height: '480px',
+            height: '560px',
             position: 'relative',
             overflow: 'hidden',
+            flexShrink: 0,
           }}>
             {inputMode === 'camera' ? (
               <CameraWithOverlay
@@ -219,7 +233,7 @@ function MakeupGuide({user, replayLook, onReplayConsumed}) {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <div style={{
-                  width: '180px', height: '240px',
+                  width: '250px', height: '300px',
                   border: '2px dashed rgba(232, 168, 196, 0.7)',
                   borderRadius: '50% 50% 45% 45%',
                 }} />
@@ -298,6 +312,37 @@ function MakeupGuide({user, replayLook, onReplayConsumed}) {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Custom style input */}
+              <div style={{marginTop: '10px', display: 'flex', gap: '8px'}}>
+                <input
+                  type="text"
+                  value={customStyle}
+                  onChange={e => {
+                    setCustomStyle(e.target.value)
+                    if (e.target.value) setSelectedStyle(null)
+                  }}
+                placeholder="Or type your own e.g. Y2K, Euphoria, Old Money..."
+                style={{
+                  flex: 1, padding: '10px 14px',
+                  borderRadius: '12px',
+                  border: customStyle ? '1.5px solid #d4a0bc' : '1px solid #f0d9e6',
+                  fontSize: '13px', color: '#6b3050',
+                  outline: 'none', backgroundColor: '#fffafc',
+                }} />
+
+                {customStyle && (
+                  <button
+                  onClick={() => {setCustomStyle(''); setSelectedStyle('douyin')}}
+                  style={{
+                    padding: '10px 12px', borderRadius: '12px',
+                    border: '1px solid #f0d9e6', backgroundColor: 'white',
+                    color: '#c4a0b4', fontSize: '13px', cursor: 'pointer',
+                  }}>
+                    x
+                  </button>
+                )}
               </div>
 
               {/* Lighting warning */}
@@ -440,56 +485,6 @@ function MakeupGuide({user, replayLook, onReplayConsumed}) {
                   <p style={{ fontSize: '13px', color: '#7A5060', lineHeight: '1.7' }}>
                     {activeStep.description}
                   </p>
-
-                  {/* Product recommendation */}
-                  {activeStep.product && (
-                    <div style={{
-                      marginTop: '10px', padding: '8px 12px',
-                      backgroundColor: 'white', borderRadius: '8px',
-                      border: '1px solid #F0D9E6',
-                      fontSize: '12px', color: '#8B3060',
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                        {activeStep.shadeHex && (
-                          <div style={{
-                            width: '16px', height: '16px', borderRadius: '50%',
-                            backgroundColor: activeStep.shadeHex,
-                            border: '1px solid #E0C0D0', flexShrink: 0,
-                          }} />
-                        )}
-                        <div>
-                          <div style={{ fontWeight: '500' }}>{activeStep.product}</div>
-                          {activeStep.shade && activeStep.shade !== 'N/A' && (
-                            <div style={{ color: '#C4A0B4', fontSize: '11px' }}>{activeStep.shade}</div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Add to cart button */}
-                      <button
-                        onClick={() => addToCart({
-                          product:   activeStep.product,
-                          shade:     activeStep.shade,
-                          shadeHex:  activeStep.shadeHex,
-                          zone:      activeStep.zone,
-                          styleName: MAKEUP_STYLES.find(s => s.id === selectedStyle)?.label,
-                        })}
-                        disabled={isInCart(activeStep.product, activeStep.shade)}
-                        style={{
-                          width: '100%', padding: '6px',
-                          borderRadius: '8px', border: 'none',
-                          backgroundColor: isInCart(activeStep.product, activeStep.shade)
-                            ? '#D4EAD0' : '#FBDCE8',
-                          color: isInCart(activeStep.product, activeStep.shade)
-                            ? '#3A7850' : '#8B3060',
-                          fontSize: '11px', cursor: 'pointer',
-                        }}
-                      >
-                        {isInCart(activeStep.product, activeStep.shade)
-                          ? '✅ In cart' : '+ Add to cart'}
-                      </button>
-                    </div>
-                  )}
 
                   {activeStep.tip && (
                     <div style={{

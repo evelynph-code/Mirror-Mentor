@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect} from "react";
+import { useState, useRef, useEffect, useCallback} from "react";
 import { useFaceMesh } from "../hooks/useFaceMesh";
 import { analyzeLighting } from "../utils/lightingAnalyzer";
 
@@ -8,28 +8,30 @@ function CameraWithOverlay({ activeStep, onVideoReady, onCameraToggle, onLightin
     const videoRef = useRef(null)
     const canvasRef = useRef(null)
     const streamRef = useRef(null)
+    const nullRef = useRef(null)
 
     const[isOn, setIsOn] = useState(false)
-    const[loading, setLoading] = useState(true)
+    const[loading, setLoading] = useState(false)
     const[error, setError] = useState(null)
     const[lightingReport, setLightingReport] = useState(null)
 
     const frameCountRef = useRef(0)
 
-    const {faceDetected} = useFaceMesh(
-        isOn ? videoRef : {current: null},
-        isOn ? canvasRef : {current:null},
-        activeStep,
-        //Called every frame with landmarks + canvas
-        (landmarks, canvas) => {
-            frameCountRef.current += 1
-            if (frameCountRef.current % 30 !== 0) return
-            const report = analyzeLighting(canvas, landmarks)
-            if (report) {
-                setLightingReport(report)
-                if (onLightingUpdate) onLightingUpdate(report)
-            }
+    const handleLandmarks = useCallback((landmarks, canvas) => {
+        frameCountRef.current += 1
+        if (frameCountRef.current % 30 !== 0) return
+        const report = analyzeLighting(videoRef.current)
+        if (report) {
+            setLightingReport(report)
+            if (onLightingUpdate) onLightingUpdate(report)
         }
+    }, [onLightingUpdate])
+
+    const {faceDetected} = useFaceMesh(
+        isOn ? videoRef : nullRef,
+        isOn ? canvasRef : nullRef,
+        activeStep,
+        handleLandmarks
     )
 
     async function startCamera() {
@@ -72,7 +74,6 @@ function CameraWithOverlay({ activeStep, onVideoReady, onCameraToggle, onLightin
     }
 
     useEffect(() => {
-        startCamera()
         return () => {
         if (streamRef.current) {
             streamRef.current.getTracks().forEach(t => t.stop())

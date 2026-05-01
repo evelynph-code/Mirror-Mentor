@@ -11,9 +11,8 @@ export function useFaceMesh(videoRef, canvasRef, activeStep, onLandmarks) {
   }, [activeStep, onLandmarks])
 
   useEffect(() => {
-    if (!videoRef?.current || !canvasRef?.current) {
-      return
-    }
+    if (!videoRef?.current || !canvasRef?.current) return
+    if (typeof canvasRef.current.getContext !== 'function') return
 
     const FaceMesh = window.FaceMesh
     if (!FaceMesh) {
