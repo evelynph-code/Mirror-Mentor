@@ -140,7 +140,7 @@ function MakeupGuide({user, replayLook, onReplayConsumed}) {
       }}>
         <div>
           <h2 style={{ fontSize: '20px', fontWeight: '500', color: '#6B3050' }}>
-            Makeup guide
+            Makeup Guide
           </h2>
           <p style={{ fontSize: '13px', color: '#C4A0B4', marginTop: '2px' }}>
             {guideStarted

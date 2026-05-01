@@ -43,8 +43,8 @@ function Sidebar({ activePage, setActivePage, user, onLogout}) {
                 color: activePage === 'guide' ? '#8B3060' : '#9B6B80',
                 fontWeight: activePage === 'guide' ? '500' : '400',
             }}>
-                <div style={{ width: '9px', heigh: '9px', borderRadius: '50%', backgroundColor: '#E8A0BC', flexShrink: 0}} />
-                Makeup guide
+                <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#d66791ff', flexShrink: 0}} />
+                    Makeup Guide
             </div>
 
             {/* Product Finder nav item */}
@@ -58,8 +58,8 @@ function Sidebar({ activePage, setActivePage, user, onLogout}) {
                 color: activePage === 'products' ? '#8B3060' : '#9B6B80',
                 fontWeight: activePage === 'products' ? '500' : '400',
             }}>
-                <div style={{ width: '9px', heigh: '9px', borderRadius: '50%', backgroundColor: '#C4A8D4', flexShrink: 0}} />
-                Product finder
+                <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#e5f00eff', flexShrink: 0}} />
+                    Product Finder
             </div>
 
             {/* My cart nav item */}
@@ -74,7 +74,7 @@ function Sidebar({ activePage, setActivePage, user, onLogout}) {
                 fontWeight: activePage === 'cart' ? '500' : '400',
             }}>
                 <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#c4a8d4', flexShrink: 0}} />
-                    My cart
+                    My Cart
             </div>
 
             {/* Section label */}
@@ -95,7 +95,7 @@ function Sidebar({ activePage, setActivePage, user, onLogout}) {
             }}
             >
             <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#A8C4D4', flexShrink: 0 }} />
-            My looks
+            My Looks
             </div>
 
             {/* Skin Profile */}
@@ -111,7 +111,7 @@ function Sidebar({ activePage, setActivePage, user, onLogout}) {
             }}
             >
             <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#A8C4D4', flexShrink: 0 }} />
-            Skin profile
+            Skin Profile
             </div>
 
             {/* Profile summary card - pushed to bottom */}
