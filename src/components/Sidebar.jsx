@@ -1,4 +1,7 @@
-function Sidebar({ activePage, setActivePage}) {
+import { useProfile } from "../hooks/useProfile"
+
+function Sidebar({ activePage, setActivePage, user, onLogout}) {
+    const {profile} = useProfile(user)
     return (
         <div style={{
             width: '240px',
@@ -112,13 +115,79 @@ function Sidebar({ activePage, setActivePage}) {
             </div>
 
             {/* Profile summary card - pushed to bottom */}
-            <div style={{ marginTop: 'auto', backgroundColor: '#FBDCE8', borderRadius: '12px', padding: '14px'}}>
-                <div style={{ fontSize: '11px', color: '$B07890', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px'}}>
+            <div style={{
+                marginTop: 'auto',
+                backgroundColor: '#fbdce8',
+                borderRadius: '12px',
+                padding: '14px',
+            }}>
+                <div style={{
+                    fontSize: '11px', color: '#b07890',
+                    textTransform: 'uppercase', letterSpacing: '0.6px',
+                    marginBottom: '8px',
+                }}>
                     Your profile
                 </div>
-                <div style={{ fontSize: '13px', color: '#6B3050', marginBottom: '4px'}}>Skin type: Combination</div>
-                <div style={{ fontSize: '13px', color: '#6B3050', marginBottom: '4px'}}>Tone: Medium warm</div>
-                <div style={{ fontSize: '13px', color: '#6B3050'}}>Shape: Oval</div>
+
+                {profile ? (
+                    <>
+                        {profile.skin_type && (
+                            <div style={{fontSize: '13px', color: '#6b3050', marginBottom: '4px', textTransform: 'capitalize'}}>
+                                Skin: {profile.skin_type}
+                            </div>
+                        )}
+                        {profile.skin_tone && (
+                            <div style={{display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px'}}>
+                                {profile.skin_tone_hex && (
+                                    <div style={{
+                                        width: '12px', height: '12px', borderRadius: '50%',
+                                        backgroundColor: profile.skin_tone_hex,
+                                        border: '1px solid rgba(0,0,0,0.1)', flexShrink: 0,
+                                    }} />
+                                )}
+                                <span style={{fontSize: '13px', color: '#6b3050', textTransform: 'capitalize'}}>
+                                    {profile.skin_tone}
+                                </span>
+                            </div>
+                        )}
+                        {profile.face_shape && (
+                            <div style={{fontSize: '13px', color: '#6b3050', marginBottom: '4px', textTransform: 'capitalize'}}>
+                                Face: {profile.face_shape}
+                            </div>
+                        )}
+                        {profile.budget && (
+                            <div style={{fontSize: '13px', color: '#6b3050', textTransform: 'capitalize'}}>
+                                Budget: {profile.budget}
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    //No profile yet
+                    <div style={{fontSize: '12px', color: '#b07890', lineHeight: '1.6'}}>
+                        Run the makeup guide to build your profile ✨
+                    </div>
+                )}
+
+                {/* User email */}
+                <div style={{
+                    fontSize: '11px', color: '#b07890',
+                    marginTop: '10px', marginBottom: '8px',
+                    wordBreak: 'break-all',
+                }}>
+                    {user?.email}
+                </div>
+
+                {/* Logout */}
+                <button
+                onClick={onLogout}
+                style={{
+                    width: '100%', padding: '8px',
+                    borderRadius: '10px', border: 'none',
+                    backgroundColor: 'white', color: '#8b3060',
+                    fontSize: '12px', cursor: 'pointer',
+                }}>
+                    Log out
+                </button>
             </div>
         </div>
     )

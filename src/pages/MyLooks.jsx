@@ -3,7 +3,7 @@ import { useLooks } from "../hooks/useLooks";
 
 
 function MyLooks({user, onReplayLook}) {
-    const {looks, loadingLooks, loadLooks, deleteLooks} = useLooks(user)
+    const {looks, loadingLooks, loadLooks, deleteLook} = useLooks(user)
 
     useEffect(() => {
         loadLooks()
@@ -21,7 +21,7 @@ function MyLooks({user, onReplayLook}) {
     }
 
     return (
-        <div style={{display: 'flex', flexDirecion: 'column', height: '100vh'}}>
+        <div style={{display: 'flex', flexDirection: 'column', height: '100vh'}}>
 
             {/* Topbar */}
             <div style={{
@@ -63,7 +63,7 @@ function MyLooks({user, onReplayLook}) {
                 {looks.length > 0 && (
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr)',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
                         gap: '16px',
                     }}>
                         {looks.map(look => (
@@ -71,7 +71,7 @@ function MyLooks({user, onReplayLook}) {
                             key={look.id}
                             look={look}
                             onReplay={() => onReplayLook?.(look)}
-                            onDelete={() => deleteLooks(look.id)} />
+                            onDelete={() => deleteLook(look.id)} />
                         ))}
                     </div>
                 )}
@@ -141,7 +141,7 @@ function LookCard({look, onReplay, onDelete}) {
                         { label: faceData.faceShape + ' face', color: '#A0C4B8' },
                         { label: faceData.skinTone,            color: '#C4956A' },
                         { label: faceData.eyeShape + ' eyes',  color: '#E8A0BC' },
-                    ].filter(c => c.label && c.label !== 'undefined').map(chip => (
+                    ].filter(c => c.label && c.label.startsWith('undefined')).map(chip => (
                         <div key={chip.label} style={{
                             display:'flex', alignItems: 'center', gap: '4px',
                             fontSize: '10px', padding: '3px 8px',
