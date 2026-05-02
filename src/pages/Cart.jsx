@@ -135,14 +135,34 @@ function Cart({user}) {
                                         ${total.toFixed(2)}
                                     </p>
                                 </div>
+                                
+                                {/* Quick shop all buttons */}
                                 <div style={{textAlign: 'right'}}>
-                                    <p style={{fontSize: '11px', color: '#c4a0b4', marginBottom: '6px'}}>
-                                        Ready to shop?
+                                    <p style={{fontSize: '11px', color: '#c4a0b4', marginBottom: '8px'}}>
+                                        Shop all on:
                                     </p>
-                                    <p style={{fontSize: '12px', color: '#9b6b80', lineHeight: '1.6'}}>
-                                        Search each product on<br />
-                                        Amazon, Sephora or Ulta
-                                    </p>
+                                    <dic style={{display: 'flex', gap: '6px'}}>
+                                        {[
+                                            {label: 'Sephora', url: 'https://www.sephora.com'},
+                                            {label: 'Ulta', url: 'https://www.ulta.com'},
+                                            {label: 'Amazon', url: 'https://www.amazon.com'},
+                                        ].map(link => (
+                                            <a
+                                                key={link.label}
+                                                href={link.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                    fontSize: '12px', padding: '6px 12px',
+                                                    borderRadius: '10px', border: 'none',
+                                                    backgroundColor: '#8b3060', color: 'white',
+                                                    textDecoration: 'none', cursor: 'pointer',
+                                                    fontWeight: '500',
+                                            }}>
+                                            {link.label}
+                                            </a>
+                                        ))}
+                                    </dic>
                                 </div>
                             </div>
                         </div>
@@ -155,64 +175,110 @@ function Cart({user}) {
 
 //Cart Item
 function CartItem({item, onRemove}) {
+    const searchQuery = encodeURIComponent(`${item.brand ?? ''} ${item.product_name} ${item.shade ?? ''}`.trim())
+
+    const searchLinks = [
+        {
+            label: 'Sephora',
+            url: `https://www.sephora.com/search?keyword=${searchQuery}`,
+            color: '#000000',
+        },
+        {
+            label: 'Ulta',
+            url: `https://www.ulta.com/search?search=${searchQuery}`,
+            color: '#000000',
+        },
+        {
+            label: 'Amazon',
+            url: `https://www.amazon.com/s?k=${searchQuery}`,
+            color: '#ff9900',
+        }
+    ]
+
     return (
         <div style={{
             display: 'flex', alignItems: 'center', gap: '14px',
             padding: '14px 16px', borderRadius: '12px',
             backgroundColor: 'white', border: '1px solid #f0d9e6',
         }}>
+            {/* Top row - swatch + info + price + remove */}
+            <div style={{display: 'flex', alignItems: 'center', gap: '14px'}}>
 
-            {/* Shade swatch */}
-            <div style={{
-                width: '36px', height: '36px', borderRadius: '50%', flexShrink: 0,
-                backgroundColor: item.shade_hex ?? '#fbdce8',
-                border: '2px solid #f0d9e6',
-            }} />
+                {/* Shade swatch */}
+                <div style={{
+                    width: '36px', height: '36px', borderRadius: '50%', flexShrink: 0,
+                    backgroundColor: item.shade_hex ?? '#fbdce8',
+                    border: '2px solid #f0d9e6',
+                }} />
 
-            {/* Product info */}
-            <div style={{flex: 1}}>
-                <p style={{fontSize: '14px', fontWeight: '500', color: '#6b3050', marginBottom: '2px'}}>
-                    {item.product_name}
-                </p>
-                <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}>
-                    {item.brand && (
-                        <span style={{fontSize: '11px', color: '#c4a0b4'}}>
-                            {item.brand}
-                        </span>
-                    )}
-                    {item.shade && item.shade !== 'N/A' && (
-                        <span style={{fontSize: '11px', color: '#9b6070'}}>
-                            · {item.shade}
-                        </span>
-                    )}
-                    {item.zone && (
-                        <span style={{fontSize: '11px', color: '#c4a0b4'}}>
-                            · {item.zone}
-                        </span>
-                    )}
+                {/* Product info */}
+                <div style={{flex: 1}}>
+                    <p style={{fontSize: '14px', fontWeight: '500', color: '#6b3050', marginBottom: '2px'}}>
+                        {item.product_name}
+                    </p>
+                    <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}>
+                        {item.brand && (
+                            <span style={{fontSize: '11px', color: '#c4a0b4'}}>
+                                {item.brand}
+                            </span>
+                        )}
+                        {item.shade && item.shade !== 'N/A' && (
+                            <span style={{fontSize: '11px', color: '#9b6070'}}>
+                                · {item.shade}
+                            </span>
+                        )}
+                        {item.zone && (
+                            <span style={{fontSize: '11px', color: '#c4a0b4'}}>
+                                · {item.zone}
+                            </span>
+                        )}
+                    </div>
                 </div>
+
+                {/* Price */}
+                {item.price && (
+                    <p style={{fontSize: '15px', fontWeight: '500', color: '#8b3060', flexShrink: 0}}>
+                        ${parseFloat(item.price).toFixed(2)}
+                    </p>
+                )}
+
+                {/* Remove button */}
+                <button 
+                onClick={onRemove}
+                style={{
+                    width: '30px', height: '30px', borderRadius: '50%',
+                    border: '1px solid #f0d9e6', backgroundColor: 'white',
+                    color: '#c4a0b4', fontSize: '14px', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    flexShrink: 0,
+                    transition: 'all 0.15s ease',
+                }}>
+                    x
+                </button>
             </div>
 
-            {/* Price */}
-            {item.price && (
-                <p style={{fontSize: '15px', fontWeight: '500', color: '#8b3060', flexShrink: 0}}>
-                    ${parseFloat(item.price).toFixed(2)}
-                </p>
-            )}
-
-            {/* Remove button */}
-            <button 
-            onClick={onRemove}
-            style={{
-                width: '30px', height: '30px', borderRadius: '50%',
-                border: '1px solid #f0d9e6', backgroundColor: 'white',
-                color: '#c4a0b4', fontSize: '14px', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0,
-                transition: 'all 0.15s ease',
-            }}>
-                x
-            </button>
+            {/* Search buttons */}
+            <div style={{display: 'flex', gap: '6px', marginTop: '10px'}}>
+                <span style={{fontSize: '11px', color: '#c4a0b4', alignSelf: 'center', flexShrink: 0}}>
+                    Shop on:
+                </span>
+                {searchLinks.map(link => (
+                    <a
+                    key={link.label}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                        fontSize: '11px', padding: '4px 10px',
+                        borderRadius: '8px', border: '1px solid #f0d9e6',
+                        backgroundColor: '#fffafc', color: '#6b3050',
+                        textDecoration: 'none', cursor: 'pointer',
+                        fontWeight: '500',
+                    }}>
+                        {link.label} →
+                    </a>
+                ))}
+            </div>
         </div>
     )
 }
