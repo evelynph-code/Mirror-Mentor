@@ -31,7 +31,7 @@ export function useLooks(user) {
         )
     }
 
-    async function saveLooks(styleName, faceData, steps) {
+    async function saveLook(styleName, faceData, steps) {
         if (!user) {
             console.error('No user — cannot save look')
             return
@@ -82,5 +82,5 @@ export function useLooks(user) {
         }
     }
 
-    return {looks, loadingLooks, loadLooks, saveLooks, deleteLook}
+    return {looks, loadingLooks, loadLooks, saveLook, isLookSaved, deleteLook}
 }

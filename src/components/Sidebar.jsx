@@ -58,7 +58,7 @@ function Sidebar({ activePage, setActivePage, user, onLogout}) {
                 color: activePage === 'products' ? '#8B3060' : '#9B6B80',
                 fontWeight: activePage === 'products' ? '500' : '400',
             }}>
-                <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#e5f00eff', flexShrink: 0}} />
+                <div style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#f0a10eff', flexShrink: 0}} />
                     Product Finder
             </div>
 
