@@ -37,69 +37,73 @@ export async function analyzeAndGenerate(base64Image, makeupStyle, lightingConfi
     : `Lighting quality is unknown - be conservative with skin tone.`
 
     const prompt = `
-    You are a professional makeup artist AI and color analyst.
+      You are a professional makeup artist and beauty educator.
 
-    ${lightingContext}
+      ${lightingContext}
 
-    Analyze this face and generate a personalized ${makeupStyle} makeup guide.
+      Analyze this face and create a detailed personalized ${makeupStyle} makeup tutorial.
 
-    Return ONLY this exact JSON with no extra text, markdown, or code blocks:
+      Return ONLY this exact JSON with no extra text, markdown, or code blocks:
 
-    {
-      "faceData": {
-        "faceShape": "oval",
-        "skinTone": "medium warm",
-        "skinToneHex": "#C68642",
-        "skinToneConfidence": "high",
-        "eyeShape": "almond",
-        "lipFullness": "full"
-      },
-      "steps": [
-        {
-          "step": 1,
-          "title": "Moisturizer + SPF",
-          "description": "Apply lightweight moisturizer all over before any makeup.",
-          "zone": "full face",
-          "tip": "Wait 1 minute before next step",
-          "shadeHex": "#F5E6D8",
-          "opacity": 0.15
+      {
+        "faceData": {
+          "faceShape": "oval",
+          "skinTone": "medium warm",
+          "skinToneHex": "#C68642",
+          "skinToneConfidence": "high",
+          "eyeShape": "almond",
+          "lipFullness": "full"
         },
-        {
-          "step": 2,
-          "title": "Foundation",
-          "description": "Apply with damp sponge using light dabbing motions.",
-          "zone": "full face",
-          "tip": "Build thin layers for a natural finish",
-          "shadeHex": "#C68450",
-          "opacity": 0.30
-        }
-      ]
-    }
+        "steps": [
+          {
+            "step": 1,
+            "title": "Moisturizer + SPF",
+            "description": "Apply a pea-sized amount of moisturizer in upward circular motions starting from the center of your face outward. Pay extra attention to dry patches around the nose and cheeks.",
+            "technique": "Press gently with fingertips — never drag or pull the skin.",
+            "zone": "full face",
+            "tip": "Wait 60 seconds before applying primer so it fully absorbs",
+            "shadeHex": "#F5E6D8",
+            "opacity": 0.15
+          }
+        ]
+      }
 
-    Rules for faceData:
-    - faceShape: oval, round, square, heart, oblong, or diamond
-    - skinTone: descriptive name e.g. "medium warm", "deep cool", "fair neutral"
-    - skinToneHex: your best estimate of their actual skin hex color
-    - skinToneConfidence: "high", "medium", or "low" based on lighting
-    - eyeShape: almond, round, monolid, hooded, upturned, or downturned
-    - lipFullness: thin, medium, or full
+      Rules for faceData:
+      - faceShape: oval, round, square, heart, oblong, or diamond
+      - skinTone: descriptive e.g. "medium warm", "deep cool", "fair neutral"
+      - skinToneHex: best estimate of their actual skin hex color
+      - skinToneConfidence: "high", "medium", or "low" based on lighting
+      - eyeShape: almond, round, monolid, hooded, upturned, or downturned
+      - lipFullness: thin, medium, or full
 
-    Rules for steps:
-    - Generate 6 to 8 steps in correct makeup application order
-    - NO product names or brands — steps only
-    - shadeHex: the color that should be applied in this step
-      e.g. foundation matches skin tone, blush is a soft pink,
-      contour is 2 shades darker than skin tone
-    - opacity: 0.15 to 0.45 — lighter for base, stronger for color
-    - Personalize shades to their exact skin tone — this is critical
-    - zone must be one of: full face, under eyes, cheekbones, cheek apples,
-      nose bridge, eyebrows, eyelids, lash line, lips, cupid's bow
-    - Keep descriptions beginner friendly and concise
-    - tip is optional
+      Rules for steps:
+      - Generate 7 to 9 steps in correct makeup application order
+      - NO product names — technique and placement only
+      - description: 2-3 sentences with SPECIFIC technique instruction.
+        Include exact motions (stipple, blend, swipe, tap, press),
+        tools to use (brush, sponge, fingers), and direction of application
+      - technique: one sentence with the most important pro tip for this step
+      - Address the user's face shape specifically:
+        e.g. for round face — contour temples and jawline to elongate,
+        for heart face — focus blush on lower cheeks,
+        for hooded eyes — apply shadow above the crease not on the lid
+      - For contour: explain exactly where to place based on their face shape,
+        how to blend, and what angle to hold the brush
+      - For highlighter: name exact points to apply (brow bone, inner corner,
+        cupid's bow, tip of nose, tops of cheekbones)
+      - For eyeshadow: explain the crease, lid, and blending technique
+      - For concealer: explain how to color correct and cover specific concerns
+      - shadeHex: color that should be applied — match to step purpose
+        (foundation matches skin tone, blush is soft pink,
+        contour is 2 shades darker, highlight is champagne/gold)
+      - opacity: 0.15 to 0.45
+      - zone: one of: full face, under eyes, cheekbones, cheek apples,
+        nose bridge, eyebrows, eyelids, lash line, lips, cupid's bow
+      - tip is optional but encouraged — make it genuinely useful
 
-    If face is not clearly visible return:
-    { "error": "Face not clearly visible" }
-  `
+      If face is not clearly visible return:
+      { "error": "Face not clearly visible" }
+    `
   const response = await fetch(`${API_URL}?key=${API_KEY}`, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},

@@ -486,6 +486,20 @@ function MakeupGuide({user, replayLook, onReplayConsumed}) {
                     {activeStep.description}
                   </p>
 
+                  {/* Technique tips */}
+                  {activeStep.technique && (
+                    <div style={{
+                      marginTop: '8px', padding: '8px 12px',
+                      backgroundColor: 'white', borderRadius: '8px',
+                      border: '1px solid #f0d9e6',
+                      fontSize: '12px', color: '#6b3050',
+                      display: 'flex', gap: '8px', alignItems: 'flex-start',
+                    }}>
+                      <span>🖌️</span>
+                      <span>{activeStep.technique}</span>
+                    </div>
+                  )}
+
                   {activeStep.tip && (
                     <div style={{
                       marginTop: '10px', padding: '8px 12px',
