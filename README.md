@@ -168,13 +168,13 @@ create policy "Users can delete own cart"
   on cart_items for delete using (auth.uid() = user_id);
 ```
 
-### 4. Run the App
+### 5. Run the App
 ```bash
 cd mirror-mentor
 npm run dev
 ```
 
-### 5. Open in Browser
+### 6. Open in Browser
 
 ---
 
