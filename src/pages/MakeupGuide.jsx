@@ -143,7 +143,7 @@ function MakeupGuide({user, replayLook, onReplayConsumed, isMobile}) {
             Makeup Guide
           </h2>
           <p style={{ fontSize: '13px', color: '#C4A0B4', marginTop: '2px' }}>
-            {guideStarted
+            {guideStarted && !completed
               ? `Step ${currentStep + 1} of ${steps?.length ?? '...'} · ${MAKEUP_STYLES.find(s => s.id === selectedStyle)?.label}`
               : 'Pick a style · Our AI will adapt it to your face'}
           </p>

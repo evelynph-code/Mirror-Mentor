@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useLooks } from "../hooks/useLooks";
+import LoadingSkeleton from "../components/LoadingSkeleton";
 
 
 function MyLooks({user, onReplayLook, isMobile}) {
@@ -11,11 +12,23 @@ function MyLooks({user, onReplayLook, isMobile}) {
 
     if (loadingLooks) {
         return (
-            <div style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                height: '100%', color: '#c4a9b4', fontSize: '14px',
-            }}>
-                Loading your looks...
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+            <div style={{ padding: '18px 28px', borderBottom: '1px solid #F0D9E6', backgroundColor: '#FFFAFC' }}>
+                <LoadingSkeleton width="120px" height="24px" style={{ marginBottom: '6px' }} />
+                <LoadingSkeleton width="80px" height="14px" />
+            </div>
+            <div style={{ padding: '24px 28px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+                {[1, 2, 3].map(i => (
+                <div key={i} style={{ backgroundColor: 'white', border: '1px solid #F0D9E6', borderRadius: '16px', overflow: 'hidden' }}>
+                    <LoadingSkeleton height="80px" borderRadius="0" />
+                    <div style={{ padding: '14px 16px' }}>
+                    <LoadingSkeleton width="60%" height="14px" style={{ marginBottom: '8px' }} />
+                    <LoadingSkeleton width="80%" height="12px" style={{ marginBottom: '6px' }} />
+                    <LoadingSkeleton width="40%" height="12px" />
+                    </div>
+                </div>
+                ))}
+            </div>
             </div>
         )
     }
@@ -48,7 +61,13 @@ function MyLooks({user, onReplayLook, isMobile}) {
                         alignItems: 'center', justifyContent: 'center',
                         height: '60%', gap: '12px', color: '#c4a0b4',
                     }}>
-                        <div style={{fontSize: '48px'}}>👀</div>
+                        <div style={{
+                            width: '80px', height: '80px', borderRadius: '50%',
+                            backgroundColor: '#fff0f6', border: '2px solid #f0d9e6',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '36px'}}>
+                                🌸
+                        </div>
                         <p style={{fontSize: '15px', fontWeight: '500', color: '#9b6b80'}}>
                             No saved looks yet
                         </p>
@@ -61,7 +80,7 @@ function MyLooks({user, onReplayLook, isMobile}) {
 
                 {/* Looks grid */}
                 {looks.length > 0 && (
-                    <div style={{
+                    <div className="hoverable" style={{
                         display: 'grid',
                         gridTemplateColumns: isMobile ? 'repeat(1,1fr)' : 'repeat(auto-fill, minmax(280px, 1fr))',
                         gap: '16px',

@@ -4,6 +4,28 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes shimmer {
+  0% {background-position: 200% 0;}
+  100% {background-position: -200% 0;}
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {transform: scale(0.8); opacity: 0.5;}
+  40% {transform: scale(1.2); opacity: 1;}
+}
+
+button:hover:not(:disabled) {
+  filter: brightness(0.95);
+  transition: filter 0.15s ease;
+}
+
+/* Card hover effects */
+.hoverable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0.4px 12px rgba(180, 100, 140, 0.12);
+  transition: all 0.2s ease;
+}
+
 /* Global base styles */
 * {
   box-sizing: border-box;
@@ -29,3 +51,4 @@ body {
   background: #E8A0BC;
   border-radius: 10px;
 }
+

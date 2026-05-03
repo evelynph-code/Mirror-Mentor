@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useProfile } from "../hooks/useProfile"
 import {supabase} from '../services/supabase'
+import LoadingSkeleton from "../components/LoadingSkeleton"
 
 const SKIN_TYPES = [
   { id: 'oily',        label: 'Oily',        emoji: '💧', desc: 'Shiny, enlarged pores' },
@@ -123,11 +124,20 @@ function SkinProfile({ user, isMobile }) {
 
   if (loadingProfile) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-        <p style={{ fontSize: '14px', color: '#C4A0B4' }}>Loading your profile...</p>
-      </div>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <div style={{ padding: '18px 28px', borderBottom: '1px solid #F0D9E6', backgroundColor: '#FFFAFC' }}>
+            <LoadingSkeleton width="120px" height="24px" style={{ marginBottom: '6px' }} />
+            <LoadingSkeleton width="200px" height="14px" />
+        </div>
+        <div style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '700px' }}>
+            <LoadingSkeleton height="120px" borderRadius="12px" />
+            <LoadingSkeleton height="160px" borderRadius="12px" />
+            <LoadingSkeleton height="200px" borderRadius="12px" />
+        </div>
+        </div>
     )
-  }
+    }
+
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>

@@ -318,7 +318,7 @@ function ProductFinder({user, isMobile}) {
                             </div>
 
                             {/* Products grid */}
-                            <div style={{
+                            <div className="hoverable" style={{
                                 display: 'grid',
                                 gridTemplateColumns: isMobile ? 'repeat(1,1fr)' : 'repeat(auto-fill, minmax(260px, 1fr))',
                                 gap: '14px',

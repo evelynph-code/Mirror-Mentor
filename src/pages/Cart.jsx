@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useCart } from "../hooks/useCart";
+import LoadingSkeleton from "../components/LoadingSkeleton";
 
 
 function Cart({user}) {
@@ -25,8 +26,23 @@ function Cart({user}) {
 
     if (loadingCart) {
         return (
-            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'}}>
-                <p style={{fontSize: '14px', color: '#c4a0b4'}}>Loading your cart...</p>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+            <div style={{ padding: '18px 28px', borderBottom: '1px solid #F0D9E6', backgroundColor: '#FFFAFC' }}>
+                <LoadingSkeleton width="100px" height="24px" style={{ marginBottom: '6px' }} />
+                <LoadingSkeleton width="80px" height="14px" />
+            </div>
+            <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '800px' }}>
+                {[1, 2, 3, 4].map(i => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', borderRadius: '12px', backgroundColor: 'white', border: '1px solid #F0D9E6' }}>
+                    <LoadingSkeleton width="36px" height="36px" borderRadius="50%" style={{ flexShrink: 0 }} />
+                    <div style={{ flex: 1 }}>
+                    <LoadingSkeleton width="60%" height="14px" style={{ marginBottom: '6px' }} />
+                    <LoadingSkeleton width="40%" height="11px" />
+                    </div>
+                    <LoadingSkeleton width="40px" height="16px" />
+                </div>
+                ))}
+            </div>
             </div>
         )
     }
@@ -76,13 +92,18 @@ function Cart({user}) {
                         alignItems: 'center', justifyContent: 'center',
                         height: '70%', gap: '12px', color: '#c4a0b4',
                     }}>
-                        <div style={{fontSize:'48px'}}>🛍️</div>
+                        <div style={{
+                            width: '80px', height: '80px', borderRadius: '50%',
+                            backgroundColor: '#fff0f6', border: '2px solid #f0d9e6',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize:'36px'}}>
+                                🛍️
+                        </div>
                         <p style={{fontSize: '15px', fontWeight: '500', color: '#9b6b80'}}>
                             Your cart is empty
                         </p>
                         <p style={{fontSize: '13px', textAlign: 'center', lineHeight: '1.7'}}>
                             Add products from the<br />
-                            <strong style={{color: '#8b3060'}}>Makeup guide</strong> or{' '}
                             <strong style={{color: '#8b3060'}}>Product finder</strong>
                         </p>
                     </div>

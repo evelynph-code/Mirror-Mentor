@@ -20,8 +20,15 @@ export function useGemini() {
             setFaceData(result.faceData)
             setSteps(result.steps)
         } catch (err) {
-            console.error('Gemini error:', err)
-            setError(err.message || 'Something went wrong. Please try again.')
+            if (err.message.includes('429')) {
+                setError('Too many requests - please wait 30 seconds and try again.')
+            } else if (err.message.includes('503')) {
+                setError('AI is temporarily busy - please try again in a moment.')
+            } else if (err.message.includes('Face not clearly visible')) {
+                setError('Face not clearly visible - make sure your face is centered and well lit.')
+            } else {
+                setError('Something went wrong - please try again.')
+            }
         } finally {
             setAnalyzing(false)
         }
