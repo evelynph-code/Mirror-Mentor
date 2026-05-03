@@ -129,8 +129,41 @@ function MakeupGuide({user, replayLook, onReplayConsumed, isMobile}) {
     setTimeout(() => setLookSaved(false), 3000)
   }
 
+  const currentStyleName = customStyle.trim() ||
+    MAKEUP_STYLES.find(s => s.id === selectedStyle)?.label || ''
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      {/* Analyzing overlay */}
+      {analyzing && (
+        <div style={{
+          position: 'fixed', inset: 0,
+          backgroundColor: 'rgba(255, 240, 248, 0.92)',
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          gap: '16px', zIndex: 200,
+        }}>
+          <div style={{fontSize: '52px'}}>✨</div>
+          <div style={{textAlign: 'center'}}>
+            <p style={{fontSize: '18px', fontWeight: '500', color: '#6b3050', marginBottom: '8px'}}>
+              Analyzing your face...
+            </p>
+            <p style={{fontSize: '13px', color: '#c4a0b4'}}>
+              Creating your personalized {currentStyleName} guide
+            </p>
+          </div>
+          {/* Animation dots */}
+          <div style={{display: 'flex', gap: '8px'}}>
+            {[0,1,2].map(i => (
+              <div key={i} style={{
+                width: '8px', height: '8px', borderRadius: '50%',
+                backgroundColor: '#e8a0bc',
+                animation: `bounce 1.2s ease-in-out ${i * 0.2}s infinite`,
+              }} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Topbar */}
       <div style={{
