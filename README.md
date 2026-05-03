@@ -125,6 +125,8 @@ create table cart_items (
   price        text,
   zone         text,
   style_name   text,
+  skin_concern text[] default '{}',
+  total_budget text,
   created_at   timestamp with time zone default now()
 );
 
@@ -164,10 +166,6 @@ create policy "Users can insert own cart"
 
 create policy "Users can delete own cart"
   on cart_items for delete using (auth.uid() = user_id);
-
-alter table profiles
-  add column if not exists skin_concerns text[] default '{}',
-  add column if not exists total_budget  text;
 ```
 
 ### 4. Run the App
