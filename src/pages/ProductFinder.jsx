@@ -12,7 +12,7 @@ const MAKEUP_STYLES = [
   { id: 'baddie',    label: 'Baddie',        color: '#7A4060' },
 ]
 
-function ProductFinder({user}) {
+function ProductFinder({user, isMobile}) {
     const {profile, loadingProfile} = useProfile(user)
     const {cart, loadCart, addToCart, removeFromCart, isInCart} = useCart(user)
     
@@ -86,11 +86,13 @@ function ProductFinder({user}) {
             </div>
 
             {/* Body */}
-            <div style={{display: 'flex', flex: 1, overflow: 'hidden'}}>
+            <div style={{display: 'flex', flexDirection: isMobile ? 'column' : 'row', flex: 1, overflow: 'hidden'}}>
 
                 {/* Left - controls */}
                 <div style={{
-                    width: '280px', borderRight: '1px solid #f0d9e6',
+                    width: isMobile ? '100%' : '280px', 
+                    borderRight: isMobile ? 'none' : '1px solid #f0d9e6',
+                    borderBottom: isMobile ? '1px solid #f0d9e6' : 'none',
                     padding: '24px 18px', display: 'flex',
                     flexDirection: 'column', gap: '20px',
                     overflowY: 'auto', flexShrink: 0,
@@ -318,7 +320,7 @@ function ProductFinder({user}) {
                             {/* Products grid */}
                             <div style={{
                                 display: 'grid',
-                                gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                                gridTemplateColumns: isMobile ? 'repeat(1,1fr)' : 'repeat(auto-fill, minmax(260px, 1fr))',
                                 gap: '14px',
                             }}>
                                 {products.map((product, index) => (

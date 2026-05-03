@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLooks } from "../hooks/useLooks";
 
 
-function MyLooks({user, onReplayLook}) {
+function MyLooks({user, onReplayLook, isMobile}) {
     const {looks, loadingLooks, loadLooks, deleteLook} = useLooks(user)
 
     useEffect(() => {
@@ -63,7 +63,7 @@ function MyLooks({user, onReplayLook}) {
                 {looks.length > 0 && (
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                        gridTemplateColumns: isMobile ? 'repeat(1,1fr)' : 'repeat(auto-fill, minmax(280px, 1fr))',
                         gap: '16px',
                     }}>
                         {looks.map(look => (

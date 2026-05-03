@@ -1,8 +1,12 @@
 import { useState } from "react";
 import {supabase} from "../services/supabase"
+import { useWindowSize } from "../hooks/useWindowSize";
 
 
 function Auth({onAuthSuccess}) {
+    const {width} = useWindowSize()
+    const isMobile = width < 768
+
     const [mode, setMode] = useState('login')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -61,7 +65,7 @@ function Auth({onAuthSuccess}) {
                 maxWidth: '400px',
                 backgroundColor: 'white',
                 borderRadius: '20px',
-                padding: '40px 36px',
+                padding: isMobile ? '28px 20px' : '40px 36px',
                 border: '1px solid #f0d9e6',
                 boxShadow: '0 4px 24px rgba(180, 100, 140, 0.08)',
             }}>

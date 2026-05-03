@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useProfile } from "../hooks/useProfile"
+import {supabase} from '../services/supabase'
 
 const SKIN_TYPES = [
   { id: 'oily',        label: 'Oily',        emoji: '💧', desc: 'Shiny, enlarged pores' },
@@ -46,7 +47,7 @@ const SKIN_TONES  = [
   { label: 'Deep warm',    hex: '#5C3010' },
 ]
 
-function SkinProfile({ user }) {
+function SkinProfile({ user, isMobile }) {
   const { profile, loadingProfile, saveProfile } = useProfile(user)
 
   const [skinType, setSkinType]           = useState('')
@@ -145,6 +146,23 @@ function SkinProfile({ user }) {
             Tell us about your skin so we can personalize your recommendations
           </p>
         </div>
+
+        {/* Right side of topbar - logout button - mobile only */}
+        <div style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
+            {isMobile && (
+                <button
+                onClick={() => supabase.auth.signOut()}
+                style={{
+                    fontSize: '13px', padding: '7px 16px',
+                    borderRadius: '20px', border: '1px solid #f0d9e6',
+                    backgroundColor: 'white', color: '#9b6b80', cursor: 'pointer',
+                }}>
+                    Log out
+                </button>
+            )}
+        </div>
+
+        {/* Save button */}
         <button
           onClick={handleSave}
           disabled={saving || !skinType}

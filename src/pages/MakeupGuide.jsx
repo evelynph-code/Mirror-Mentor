@@ -15,7 +15,7 @@ const MAKEUP_STYLES = [
   { id: 'baddie',    label: 'Baddie',        color: '#7A4060' },
 ]
 
-function MakeupGuide({user, replayLook, onReplayConsumed}) {
+function MakeupGuide({user, replayLook, onReplayConsumed, isMobile}) {
   const [inputMode, setInputMode]         = useState('camera')
   const [selectedStyle, setSelectedStyle] = useState('korean')
   const [cameraOn, setCameraOn]           = useState(false)
@@ -187,7 +187,7 @@ function MakeupGuide({user, replayLook, onReplayConsumed}) {
       </div>
 
       {/* Body */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', flex: 1, overflow: 'hidden' }}>
 
         {/* Left panel */}
         <div style={{
@@ -201,7 +201,8 @@ function MakeupGuide({user, replayLook, onReplayConsumed}) {
             backgroundColor: '#FFF5F8',
             border: '1px solid #F0D9E6',
             borderRadius: '16px',
-            height: '560px',
+            height: isMobile ? '320px' : '560px',
+            minHeight: isMobile ? '320px' : '560px',
             position: 'relative',
             overflow: 'hidden',
             flexShrink: 0,
@@ -293,7 +294,7 @@ function MakeupGuide({user, replayLook, onReplayConsumed}) {
                 <p style={{ fontSize: '13px', color: '#C4A0B4', marginBottom: '10px' }}>
                   Choose your style
                 </p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(3, 1fr)', gap: '10px' }}>
                   {MAKEUP_STYLES.map(style => (
                     <div
                       key={style.id}
@@ -420,10 +421,12 @@ function MakeupGuide({user, replayLook, onReplayConsumed}) {
 
         {/* Right panel */}
         <div style={{
-          width: '300px', borderLeft: '1px solid #F0D9E6',
+          width: isMobile ? '100%' : '300px', 
+          borderLeft: isMobile ? 'none' : '1px solid #F0D9E6',
+          borderTop: isMobile ? '1px solid #f0d9e6' : 'none',
           backgroundColor: '#FFFAFC', padding: '24px 18px',
           display: 'flex', flexDirection: 'column',
-          gap: '14px', overflowY: 'auto', flexShrink: 0,
+          gap: '14px', overflowY: isMobile ? 'visible' : 'auto', flexShrink: 0,
         }}>
 
           {/* Before guide */}
